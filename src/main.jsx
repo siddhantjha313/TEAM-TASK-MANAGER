@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   Briefcase, CheckCircle2, Clock3, FolderKanban, LayoutDashboard, LogOut, Plus,
-  Shield, UserPlus, Users, AlertCircle, Search, TrendingUp, Calendar, User
+  Shield, UserPlus, Users, AlertCircle, Search, TrendingUp, Calendar, User, Menu, X
 } from 'lucide-react';
 import './styles.css';
 
@@ -40,6 +40,7 @@ function App() {
   const [taskForm, setTaskForm] = useState(emptyTask);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const isAdmin = user?.role === 'admin';
 
@@ -205,13 +206,16 @@ function App() {
 
   return (
     <main className="app-shell">
-      <aside className="sidebar">
-        <div className="brand-row compact"><FolderKanban size={24} /><span>Workboard</span></div>
+      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-header">
+          <div className="brand-row compact"><FolderKanban size={24} /><span>Workboard</span></div>
+          <button className="close-sidebar" onClick={() => setSidebarOpen(false)}><X size={20} /></button>
+        </div>
         <nav>
-          <button className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}><LayoutDashboard size={18} /><span>Dashboard</span></button>
-          <button className={`nav-item ${activeTab === 'projects' ? 'active' : ''}`} onClick={() => setActiveTab('projects')}><Briefcase size={18} /><span>Projects</span></button>
-          <button className={`nav-item ${activeTab === 'tasks' ? 'active' : ''}`} onClick={() => setActiveTab('tasks')}><CheckCircle2 size={18} /><span>Tasks</span></button>
-          {isAdmin && <button className={`nav-item ${activeTab === 'team' ? 'active' : ''}`} onClick={() => setActiveTab('team')}><Users size={18} /><span>Team</span></button>}
+          <button className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setSidebarOpen(false); }}><LayoutDashboard size={18} /><span>Dashboard</span></button>
+          <button className={`nav-item ${activeTab === 'projects' ? 'active' : ''}`} onClick={() => { setActiveTab('projects'); setSidebarOpen(false); }}><Briefcase size={18} /><span>Projects</span></button>
+          <button className={`nav-item ${activeTab === 'tasks' ? 'active' : ''}`} onClick={() => { setActiveTab('tasks'); setSidebarOpen(false); }}><CheckCircle2 size={18} /><span>Tasks</span></button>
+          {isAdmin && <button className={`nav-item ${activeTab === 'team' ? 'active' : ''}`} onClick={() => { setActiveTab('team'); setSidebarOpen(false); }}><Users size={18} /><span>Team</span></button>}
         </nav>
         <div className="profile">
           <span className="avatar">{user.name.slice(0, 1).toUpperCase()}</span>
@@ -222,9 +226,12 @@ function App() {
 
       <section className="content">
         <header className="topbar">
-          <div>
-            <h1>{activeTab === 'dashboard' ? 'Dashboard' : activeTab === 'projects' ? 'Projects' : activeTab === 'tasks' ? 'Tasks' : 'Team'}</h1>
-            <p>{isAdmin ? 'Manage your workspace' : 'Track your work'}</p>
+          <div className="topbar-left">
+            <button className="menu-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}><Menu size={24} /></button>
+            <div>
+              <h1>{activeTab === 'dashboard' ? 'Dashboard' : activeTab === 'projects' ? 'Projects' : activeTab === 'tasks' ? 'Tasks' : 'Team'}</h1>
+              <p>{isAdmin ? 'Manage your workspace' : 'Track your work'}</p>
+            </div>
           </div>
           <button className="ghost" onClick={loadApp} disabled={loading}>{loading ? 'Refreshing...' : 'Refresh'}</button>
         </header>
